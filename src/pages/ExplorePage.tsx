@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Search, SlidersHorizontal, X, MapPin, Sparkles, ChevronDown,
-  Bot, Send
+  Bot, Send, BookOpen,
 } from 'lucide-react';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { ProviderCard } from '@/components/ui/ProviderCard';
@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/Badge';
 import { EmptyState, SkeletonList } from '@/components/ui/EmptyState';
 import { cn } from '@/utils/cn';
 import { mockProviders } from '@/data/mockProviders';
-import { skillCategories, popularSkills } from '@/data/mockSkills';
+import { skillCategories } from '@/data/mockSkills';
+import { activeSkills } from '@/data/skillCatalogue';
 import type { Provider } from '@/types';
 
 const distanceOptions = [2, 5, 10, 25];
@@ -276,33 +277,128 @@ export function ExplorePage() {
                 </div>
               </div>
 
-              {/* Skill chips */}
+              {/* Skill chips — all active skills from the verified catalogue */}
               <div className="flex gap-2 mb-5 flex-wrap">
                 <button
                   onClick={() => updateFilter('query', '')}
                   className={cn('px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
-                    !filters.query ? 'bg-indigo-600 text-white border-indigo-600' : 'border-[#E2E8F0] dark:border-[#1E293B] text-slate-600 dark:text-slate-400 hover:border-indigo-300 bg-white dark:bg-[#111827]'
+                    !filters.query
+                      ? 'bg-indigo-600 text-white border-indigo-600'
+                      : 'border-[#E2E8F0] dark:border-[#1E293B] text-slate-600 dark:text-slate-400 hover:border-indigo-300 bg-white dark:bg-[#111827]'
                   )}
-                >All</button>
-                {popularSkills.slice(0, 8).map(s => (
-                  <button key={s.id}
-                    onClick={() => updateFilter('query', s.name)}
-                    className={cn('px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
-                      filters.query === s.name ? 'bg-indigo-600 text-white border-indigo-600' : 'border-[#E2E8F0] dark:border-[#1E293B] text-slate-600 dark:text-slate-400 hover:border-indigo-300 bg-white dark:bg-[#111827]'
-                    )}
-                  >{s.name}</button>
-                ))}
+                >
+                  All
+                </button>
+                {activeSkills
+                  .sort((a, b) => a.popularityRank - b.popularityRank)
+                  .map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => updateFilter('query', s.name)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1',
+                        filters.query === s.name
+                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          : 'border-[#E2E8F0] dark:border-[#1E293B] text-slate-600 dark:text-slate-400 hover:border-indigo-300 bg-white dark:bg-[#111827]'
+                      )}
+                    >
+                      <span>{s.icon}</span>
+                      {s.name}
+                    </button>
+                  ))}
               </div>
 
               {loading ? (
                 <SkeletonList count={4} />
               ) : filteredProviders.length === 0 ? (
-                <EmptyState
-                  icon={<Search className="w-6 h-6" />}
-                  title="No providers found"
-                  description="Try adjusting your filters or searching for a different skill."
-                  action={{ label: 'Clear Filters', onClick: () => setFilters({ query: '', category: '', distance: 25, maxPrice: 10000, mode: '', rating: '', experience: '' }) }}
-                />
+                (() => {
+                  // Check if the searched skill exists in the catalogue
+                  const catalogueMatch = filters.query
+                    ? activeSkills.find((s) =>
+                        s.name.toLowerCase().includes(filters.query.toLowerCase()) ||
+                        filters.query.toLowerCase().includes(s.name.toLowerCase())
+                      )
+                    : null;
+
+                  if (catalogueMatch) {
+                    return (
+                      <div className="space-y-4">
+                        {/* Skill found in catalogue — show info card */}
+                        <div className="card p-6 border-indigo-100 dark:border-indigo-900 bg-indigo-50/30 dark:bg-indigo-950/10">
+                          <div className="flex items-start gap-4">
+                            <span className="text-4xl shrink-0">{catalogueMatch.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <h3 className="text-lg font-bold text-[#0F172A] dark:text-slate-100">
+                                  {catalogueMatch.name}
+                                </h3>
+                                <Badge variant="indigo">{catalogueMatch.category}</Badge>
+                                {catalogueMatch.evidenceStatus === 'verified' && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400">
+                                    ✓ Verified market demand
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                                {catalogueMatch.description}
+                              </p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 italic mb-4">
+                                {catalogueMatch.evidenceSummary}
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {catalogueMatch.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="px-2 py-0.5 rounded-md text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* No providers yet */}
+                        <div className="card p-10 text-center">
+                          <BookOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                          <p className="text-base font-semibold text-[#0F172A] dark:text-slate-100 mb-1">
+                            No providers listed yet for {catalogueMatch.name}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-5">
+                            This skill is in our catalogue but no providers have registered in your area yet.
+                            Try browsing all providers or adjusting your filters.
+                          </p>
+                          <div className="flex gap-3 justify-center flex-wrap">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => setFilters({ query: '', category: '', distance: 25, maxPrice: 10000, mode: '', rating: '', experience: '' })}
+                            >
+                              Browse all providers
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => navigate('/signup?role=provider')}
+                            >
+                              Become a provider
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <EmptyState
+                      icon={<Search className="w-6 h-6" />}
+                      title="No providers found"
+                      description="Try adjusting your filters or searching for a different skill."
+                      action={{ label: 'Clear Filters', onClick: () => setFilters({ query: '', category: '', distance: 25, maxPrice: 10000, mode: '', rating: '', experience: '' }) }}
+                    />
+                  );
+                })()
               ) : (
                 <div className="grid gap-4 sm:grid-cols-1 xl:grid-cols-2">
                   {filteredProviders.map(p => (
