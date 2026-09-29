@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-navy: #0B1220;
+    --color-slate: #334155;
+    --color-indigo: #4F46E5;
+    --color-teal: #0F766E;
+    --color-success: #16A34A;
+    --color-warning: #D97706;
+    --color-danger: #DC2626;
+    --color-text: #0F172A;
+    --color-text-secondary: #64748B;
+    --color-border: #E2E8F0;
+    --color-border-subtle: #F1F5F9;
+  }
+
+  .dark {
+    --color-bg: #0B1220;
+    --color-surface: #111827;
+    --color-text: #F1F5F9;
+    --color-text-secondary: #94A3B8;
+    --color-border: #1E293B;
+    --color-border-subtle: #1A2436;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-[#F8FAFC] text-[#0F172A] dark:bg-[#0B1220] dark:text-[#F1F5F9];
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-indigo-100 text-indigo-900;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-indigo-600;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-600;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-spacing {
+    @apply py-16 lg:py-24;
+  }
+
+  .card {
+    @apply bg-white dark:bg-[#111827] border border-[#E2E8F0] dark:border-[#1E293B] rounded-xl shadow-soft;
+  }
+
+  .input-base {
+    @apply w-full px-3.5 py-2.5 text-sm bg-white dark:bg-[#111827] border border-[#E2E8F0] dark:border-[#1E293B] 
+           rounded-lg text-[#0F172A] dark:text-[#F1F5F9] placeholder-[#94A3B8]
+           focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500
+           transition-colors duration-150;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium
+           bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg
+           transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500/30
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium
+           bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#253347]
+           text-[#0F172A] dark:text-[#F1F5F9] border border-[#E2E8F0] dark:border-[#334155]
+           rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500/20
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium
+           text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F1F5F9]
+           hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] rounded-lg
+           transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500/20;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg
+           text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F1F5F9]
+           hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B]
+           transition-colors duration-150 cursor-pointer;
+  }
+
+  .sidebar-link.active {
+    @apply text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30;
+  }
+
+  .stat-card {
+    @apply card p-6;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold tracking-widest text-indigo-600 dark:text-indigo-400 uppercase;
+  }
+
+  .divider {
+    @apply border-t border-[#E2E8F0] dark:border-[#1E293B];
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-slate-200 dark:bg-slate-700 rounded;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Page transition */
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
