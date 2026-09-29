@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/skillshare-phase-I-majorproject/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SkillShare Local — Learn skills from people around you. Discover trusted local skill providers in your community." />
+    <title>SkillShare Local</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- SPA route restore for GitHub Pages (pairs with public/404.html redirect) -->
+    <script>
+      (function () {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+        // Decode path from query string set by 404.html
+        var l = window.location;
+        if (l.search[1] === 'p') {
+          var decoded = l.search.slice(1).split('&').reduce(function (o, s) {
+            var r = s.split('=');
+            o[r[0]] = r.slice(1).join('=').replace(/~and~/g, '&');
+            return o;
+          }, {});
+          if (decoded.p !== undefined) {
+            window.history.replaceState(
+              null, null,
+              l.pathname.slice(0, -1) + (decoded.p || '/') +
+              (decoded.q ? '?' + decoded.q : '') + l.hash
+            );
+          }
+        }
+      }());
+    </script>
+    <script type="module" crossorigin src="/skillshare-phase-I-majorproject/assets/index-DL45AZOA.js"></script>
+    <link rel="stylesheet" crossorigin href="/skillshare-phase-I-majorproject/assets/index-wCH9djj5.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
